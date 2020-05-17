@@ -18,7 +18,11 @@ PImage floorImage;
 PImage fakeWallImage;
 SpritePlayerWalking playerWalking;
 SpritePlayerIdling playerSprite;
-PImage covid19Image;
+SpriteSpider spiderSprite;
+PImage Key;
+PImage vkWhite;
+PImage vkBlack;
+PImage wallLImage;
 
 //Фоны:
 PImage menuFon;
@@ -50,13 +54,17 @@ void loadImages() {
   fakeWallImage = loadImage("fakeWall.png");
   playerWalking = new SpritePlayerWalking("playerWalking/playerWalking", 3, ".png");
   playerSprite = new SpritePlayerIdling("player/player", 2, ".png", 10);
-  covid19Image = loadImage("covid-19.png");
+  spiderSprite = new SpriteSpider("spider/spider", 7, ".png", 10);
+  Key = loadImage("key.png");
+  vkWhite = loadImage("vk.png");
+  vkBlack = loadImage("vk-black.png");
+  wallLImage = loadImage("wallL.png");
 
   //Фоны:
-  menuFon = loadImage("fon-menu.jpg");
+  menuFon = loadImage("game-pause-fon.png");
   wonFon = loadImage("fon-won.jpg");
   lostFon = loadImage("fon-lost.jpg");
-  gameFon = loadImage("fon.jpg");
+  //gameFon = loadImage("game-pause-fon.png");
   pausedFon = loadImage("fon.jpg");
 }
 
@@ -154,6 +162,47 @@ class SpritePlayerWalking {
   }
 
   SpritePlayerWalking(String imagePrefix, int count, String extension, int skip) {
+    images = new PImage[count];
+
+    for (int i = 0; i < count; i++) {
+      String fileName = imagePrefix + i + extension;
+      images[i] = loadImage(fileName);
+    }
+
+    this.skip = skip;
+    _skip = skip;
+  }
+
+  void draw(float x, float y, float width, float height) {
+    if (time < 0 || time > 0) {
+      _skip--;
+      if (_skip < 0) {
+        _skip = skip;
+        frame = (frame + 1) % images.length;
+      }
+      if (time > 0) {
+        --time;
+      }
+
+      image(images[frame], x, y, width, height);
+    } else {
+      image(images[0], x, y, width, height);
+    }
+  }
+}
+
+class SpriteSpider {
+  PImage[] images;
+  int frame;
+
+  int skip, _skip;
+  int time = -1;
+
+  SpriteSpider(String imagePrefix, int count, String extension) {
+    this(imagePrefix, count, extension, 3);
+  }
+
+  SpriteSpider(String imagePrefix, int count, String extension, int skip) {
     images = new PImage[count];
 
     for (int i = 0; i < count; i++) {

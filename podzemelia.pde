@@ -1,14 +1,23 @@
-final int MENU_STATE    = 0;
+final int MENU_STATE    = 0; 
 final int GAME_STATE    = 1;
 final int PAUSED_STATE  = 2;
 final int VICTORY_STATE = 3;
 final int LOST_STATE    = 4;
 
+int rectX, rectY;
+color rectColor;
+color rectHighlight;
+boolean rectOver = false;
+int rectSize1 = 200;
+int rectSize2 = 50;
+
 int state = MENU_STATE;
+boolean overButton = false;
 
 void setup() { 
-  fullScreen();
+  fullScreen();  
   background(0);
+  frameRate(60);
 
   loadFonts();
   loadSounds();  
@@ -38,37 +47,107 @@ void draw() {
 }
 
 void drawInMenu() {
-  image(menuFon, 0, 0);
+  if (overButton == true) {
+    image(vkBlack, 0, 700, 75, 75);
+  } else {
+    image(vkWhite, 0, 700, 75, 75);
+  }
+  rectColor = color(0);
+  rectHighlight = color(51);
+  rectX = width/2 - 100;
+  rectY = height/2 - 20;
+  ellipseMode(CENTER);
 
-  fill(200);
+  noStroke();
+  fill(0, 0, 0, 20);
+  rect(0, 0, width, height);
+
+  update(mouseX, mouseY);
+
+  if (rectOver) {
+    fill(rectHighlight);
+  } else {
+    fill(rectColor);
+  }
+  stroke(255, 0, 0);
+  rect(rectX, rectY, rectSize1, rectSize2);
+
+  noStroke();
+
+  fill(200, 0, 0);
   textSize(100);
   textAlign(CENTER, CENTER);
-  text("DUNGEON", width / 2, height / 2);
+  text("DUNGEON", width / 2, height / 2 - 100);
 
-  fill(255);
+  fill(0, 255, 0);
   textSize(50);
-  text("Нажми 'Enter', что бы начать играть.", width / 2, height / 2 + 120);
+  textAlign(CENTER, CENTER);
+  text("PLAY", width / 2, height / 2);
+
+  fill(255, 166, 0);
   textSize(30);
-  text("Нажми 'Esc', во время игры, что бы поставить на паузу.", width / 2, height / 2 + 160);
+  text("Нажми 'Esc', во время игры, что бы поставить на паузу.", width / 2, height / 2 + 60);
+
+  textSize(30);
+  text("Stay Home! :)", width / 2, height / 2 + 100);
+}
+
+void update(int x, int y) {
+  if ( overRect(width / 2 - 100, height / 2 - 30, 200, 50) ) {
+    rectOver = true;
+  } else {
+    rectOver = false;
+  }
+}
+
+void mousePressed() {
+  if (overButton) { 
+    link("https://vk.com/sam177aby");
+  }
+  if (rectOver) {
+    initGame();
+    state = GAME_STATE;
+  }
+}
+
+void mouseMoved() { 
+  checkButtons();
+}
+
+void mouseDragged() {
+  checkButtons();
+}
+
+void checkButtons() {
+  if (mouseX > 0 && mouseX < 60 && mouseY > 690 && mouseY < 900) {
+    overButton = true;
+  } else {
+    overButton = false;
+  }
+}
+
+boolean overRect(int x, int y, int width, int height) {
+  if (mouseX >= x && mouseX <= x+width && 
+    mouseY >= y && mouseY <= y+height) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 void drawGame() {
-  image(gameFon, 0, 0);
-
   drawLevel();
   drawPlayer();
   drawPlayerScore();
 }
 
 void drawInPaused() {
-  image(pausedFon, 0, 0);
-
-  fill(255, 0, 0);
+  fill(200, 0, 0);
   textSize(100);
   textAlign(CENTER, CENTER);
-  text("【D【u【n】g【e【o【n】", width / 2, height / 2);
+  text("Dungeon", width / 2, height / 2);
 
-  fill(255);
+  fill(255, 166, 0);
   textSize(50);
   text("Нажми 'Esc', что бы вернуться в игру.", width / 2, height / 2 + 120);
 }
@@ -86,7 +165,6 @@ void drawVictory() {
     rect(0, 100, 100, 100);
   }
   popMatrix();
-  //image(wonFon, 0, 0);
 
   fill(255, 0, 0);
   textSize(50);
@@ -110,12 +188,13 @@ void drawLost() {
   text("Ты проиграл:( ", width / 2, height / 2);
 
   textSize(70);
-  fill(255);
+  fill(255, 100, 50);
   text("Твой счет стал меньше нуля :( ", width / 2, height / 2 + 70);
 
   textSize(40);
   text("Нажми 'Enter', что бы вернуться в меню. Удачи в следущий раз!", width / 2, height / 2 + 130);
 }
+
 void keyPressed() {
   switch (state) {
   case MENU_STATE:
@@ -136,11 +215,15 @@ void keyPressed() {
   }
 }
 
+void initGame() {
+  playerScore = 0;
+  currentLevelIndex = -1;
+  loadNextLevel();
+}
+
 void keyPressedInMenu() {
   if (keyCode == ENTER) {
-    playerScore = 0;
-    currentLevelIndex = -1;
-    loadNextLevel();
+    initGame();
     state = GAME_STATE;
   }
 }

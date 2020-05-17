@@ -33,7 +33,7 @@ void drawLevel() {
       int pixelY = y * cellSize + centeringShiftY;
       char cell = currentLevel[y][x];
       switch (cell) {
-      case '#':
+      case 'W':
         image(wallImage, pixelX, pixelY, cellSize, cellSize);
         break;
       case ' ':
@@ -64,7 +64,12 @@ void drawLevel() {
       case 'V':
         fill(200, 200, 200);
         image(floorImage, pixelX, pixelY, cellSize, cellSize);        
-        image(covid19Image, pixelX, pixelY, cellSize, cellSize);
+        spiderSprite.draw(pixelX, pixelY, cellSize, cellSize);
+        break;
+      case 'K':
+        fill(200, 200, 200);
+        image(floorImage, pixelX, pixelY, cellSize, cellSize);
+        image(Key, pixelX, pixelY, cellSize, cellSize);
         break;
       }
     }
